@@ -47,7 +47,7 @@ public class PointCloudManager : MonoBehaviour {
 
 
 
-	void loadScene(){
+	/*void loadScene(){
 		// Check if the PointCloud was loaded previously
 		if(!Directory.Exists (Application.dataPath + "/Resources/PointCloudMeshes/" + filename)){
 			UnityEditor.AssetDatabase.CreateFolder ("Assets/Resources/PointCloudMeshes", filename);
@@ -60,11 +60,11 @@ public class PointCloudManager : MonoBehaviour {
 		} else
 			// Load stored PointCloud
 			loadStoredMeshes();
-	}
+	}*/
 	
 	
 	void LoadPointCloud(){
-        StartCoroutine("LoadPoints", @"C:\Users\Roby\Downloads\yarraValley_scan_1.txt");
+        StartCoroutine("LoadPoints", Application.dataPath + "\\scan.txt");
   
 
         /*// Check what file exists
@@ -119,15 +119,15 @@ public class PointCloudManager : MonoBehaviour {
             float angle = (float)Convert.ToDouble(elements[1]); //Not necessary given that angle is same each time. Steps aren't linear though, so I at least need to think
             float range = (float)Convert.ToDouble(elements[2]);
 
-            numPoints += ring.AddPoint(range, angle);
-
+            /*numPoints += */ring.AddPoint(range, angle);
+            numPoints++;
             if (id == 1080)
             {
                 rings.Add(ring);
                 ring = new Ring();
             }
 
-            if (numPoints % 10000 == 0)
+            if (numPoints % 30000 == 0)
             {
                 text.text = numPoints.ToString();
                 yield return null;
@@ -151,18 +151,19 @@ public class PointCloudManager : MonoBehaviour {
         {
             for (int j = 0; j < rings[i].points.Count; j++)
             {
-                if (rings[i].points[j].valid)
+                if (rings[i].points[j].valid || true)
                 {
                     Vector2 pt = rings[i].GetPointWithOffset(j);
                     points[pointNum] = new Vector3(pt.x, pt.y, i * 30);
-                    float h = Mathf.Lerp(0, 1, pt.magnitude / 2500f);
+                    float h = Mathf.Lerp(0, 1, pt.magnitude / 5000f);
 
                     colours[pointNum] = Color.HSVToRGB(h, 1, 1); //TODO: based on distance from surface
+
                     pointNum++;
                 }
             }
 
-            if (pointNum % 100 == 0)
+            if (pointNum % 500 == 0)
             {
                 text.text = i.ToString();
                 yield return null;
@@ -240,11 +241,11 @@ public class PointCloudManager : MonoBehaviour {
 			minValue.z = point.z;
 	}
 
-	void createFolders(){
+	/*void createFolders(){
 		if(!Directory.Exists (Application.dataPath + "/Resources/"))
 			UnityEditor.AssetDatabase.CreateFolder ("Assets", "Resources");
 
 		if (!Directory.Exists (Application.dataPath + "/Resources/PointCloudMeshes/"))
 			UnityEditor.AssetDatabase.CreateFolder ("Assets/Resources", "PointCloudMeshes");
-	}
+	}*/
 }
