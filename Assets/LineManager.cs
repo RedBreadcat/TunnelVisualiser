@@ -30,11 +30,11 @@ public class LineManager {
         sr.Close();
     }
 
-    public void PlotLines(Material lineMat)
+    public void PlotLines(Material lineMat, int rings)
     {
         foreach (Line l in lines)
         {
-            l.PlotLine(lineMat);
+            l.PlotLine(lineMat, rings);
         }
     }
 
@@ -44,5 +44,20 @@ public class LineManager {
         {
             l.go.SetActive(!l.go.activeInHierarchy);
         }
+    }
+
+    public float CalculateDistance(float ptX, float ptY, float ptZ)
+    {
+        float shortestDistance = float.MaxValue;
+        for (int i = 0; i < lines.Count; i++)
+        {
+            float distance = lines[i].CalculateDistanceFast(ptX, ptY, ptZ);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+            }
+        }
+
+        return shortestDistance;
     }
 }

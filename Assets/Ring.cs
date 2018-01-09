@@ -4,36 +4,34 @@ using UnityEngine;
 
 public class Ring {
 
-    public int id;
+    public int id;  //Necessary
     public Vector2 offset;
     public List<Point> points;
 
-    public struct Point
+    public class Point
     {
-        public bool valid;
+        public bool valid = true;   //default
         public Vector2 pos;
+        public float distance;
     }
 
-    public Ring()
+    public Ring(int ringID)
     {
+        id = ringID;
         points = new List<Point>(1080);
     }
 
-    public int AddPoint(float range, float angle)
+    public void AddPoint(float range, float angle)
     {
         angle *= Mathf.Deg2Rad;
-        Point pt;
+        Point pt = new Point();
 
-        pt.pos = new Vector2((float)Mathf.Sin(angle), (float)Mathf.Cos(angle)) * range;
-        pt.valid = range < 3600 && range > 1800;
+        pt.pos = new Vector2(Mathf.Sin(angle), Mathf.Cos(angle)) * range;
         points.Add(pt);
-        return pt.valid ? 1 : 0;
     }
 
     public Vector2 GetPointWithOffset(int i)
     {
-        return points[i].pos - offset;
+        return points[i].pos + offset;
     }
-
-    //can get 3D point by using ID
 }
