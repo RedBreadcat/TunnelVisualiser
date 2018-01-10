@@ -47,6 +47,11 @@ public class PointCloudManager : MonoBehaviour {
             lm.ToggleVisibility();
         }
 
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            pointCloud.SetActive(!pointCloud.activeInHierarchy);
+        }
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             Vector3 pos = Camera.main.transform.position;
