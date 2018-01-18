@@ -110,47 +110,20 @@ public class PointCloudManager : MonoBehaviour {
 
         points = new Vector3[numPoints];
         colours = new Color[numPoints];
-
+        
         int pointNum = 0;
 
         int threadCount = Environment.ProcessorCount;
         var threads = new List<Thread>();
         int ringsPerThread = rings.Count / threadCount;
 
-        //For some reason using a loop skips the first one, and the debugger breaks???
-        Thread t1 = new Thread(() => ThreadedDistanceCalculation(0, ringsPerThread));
-        t1.Start();
-        threads.Add(t1);
-        Thread t2 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread, ringsPerThread * 2));
-        t2.Start();
-        threads.Add(t2);
-        Thread t3 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 2, ringsPerThread * 3));
-        t3.Start();
-        threads.Add(t3);
-        Thread t4 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 3, ringsPerThread * 4));
-        t4.Start();
-        threads.Add(t4);
-        Thread t5 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 4, ringsPerThread * 5));
-        t5.Start();
-        threads.Add(t5);
-        Thread t6 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 5, ringsPerThread * 6));
-        t6.Start();
-        threads.Add(t6);
-        Thread t7 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 6, ringsPerThread * 7));
-        t7.Start();
-        threads.Add(t7);
-        Thread t8 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 7, ringsPerThread * 8));
-        t8.Start();
-        threads.Add(t8);
-        Thread t9 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 8, ringsPerThread * 9));
-        t9.Start();
-        threads.Add(t9);
-        Thread t10 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 9, ringsPerThread * 10));
-        t10.Start();
-        threads.Add(t10);
-        Thread t11 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 10, ringsPerThread * 11));
-        t11.Start();
-        threads.Add(t11);
+        for (int i = 0; i < 11; i++)
+        {
+            int temp = i;   //Must be done because of "closures" and "captured variables" https://stackoverflow.com/questions/26631939/captured-variables-in-a-thread-in-a-loop-in-c-what-is-the-solution
+            Thread t = new Thread(() => ThreadedDistanceCalculation(ringsPerThread*temp, ringsPerThread*(temp+1)));
+            t.Start();
+            threads.Add(t);
+        }
         Thread t12 = new Thread(() => ThreadedDistanceCalculation(ringsPerThread * 11, rings.Count));
         t12.Start();
         threads.Add(t12);
@@ -171,7 +144,8 @@ public class PointCloudManager : MonoBehaviour {
                 {
                     float s = rings[i].points[j].distance / longestDistance;
                     colours[pointNum] = Color.HSVToRGB(1, s, 1);
-                    Vector2 pt = rings[i].points[j].pos;
+
+                    Vector2 pt = rings[i].GetPointWithOffset(j);
                     points[pointNum] = new Vector3(pt.x, pt.y, i * 30);
                     pointNum++;
                 }
@@ -216,7 +190,7 @@ public class PointCloudManager : MonoBehaviour {
 		pointGroup.AddComponent<MeshRenderer>();
 		pointGroup.GetComponent<Renderer>().material = matVertex;
 
-		pointGroup.GetComponent<MeshFilter>().mesh = CreateMesh (meshInd, nPoints, pointLimit);
+		pointGroup.GetComponent<MeshFilter>().mesh = CreateMesh(meshInd, nPoints, pointLimit);
 		pointGroup.transform.parent = pointCloud.transform;
 	}
 
@@ -225,20 +199,20 @@ public class PointCloudManager : MonoBehaviour {
 		Mesh mesh = new Mesh();
 		
 		Vector3[] myPoints = new Vector3[nPoints]; 
-		int[] indecies = new int[nPoints];
+		int[] indices = new int[nPoints];
 		Color[] myColors = new Color[nPoints];
 
 		for (int i=0;i<nPoints;++i)
         {
 			myPoints[i] = points[id*limitPoints + i] - minValue;
-			indecies[i] = i;
+			indices[i] = i;
 			myColors[i] = colours[id*limitPoints + i];
 		}
 
 
 		mesh.vertices = myPoints;
 		mesh.colors = myColors;
-		mesh.SetIndices(indecies, MeshTopology.Points,0);
+		mesh.SetIndices(indices, MeshTopology.Points,0);
 		mesh.uv = new Vector2[nPoints];
 		mesh.normals = new Vector3[nPoints];
 
@@ -271,11 +245,19 @@ public class PointCloudManager : MonoBehaviour {
             rings[currentRing].offset = new Vector2(xAdjust, yAdjust);
 
             line = sr.ReadLine();
-            while (line != "RING" && line != null)
+            while (line != "RANSAC")             //while (line != "RING" && line != null)
             {
                 int pointID = Convert.ToInt32(line);
                 rings[currentRing].points[pointID].valid = false;
                 numPoints--;
+                line = sr.ReadLine();
+            }
+
+            line = sr.ReadLine();
+            while (line != "RING" && line != null)
+            {
+                int pointID = Convert.ToInt32(line);
+                rings[currentRing].points[pointID].pickedForRANSAC = true;
                 line = sr.ReadLine();
             }
 

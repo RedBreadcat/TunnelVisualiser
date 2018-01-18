@@ -11,6 +11,7 @@ public class Ring {
     public class Point
     {
         public bool valid = true;   //default
+        public bool pickedForRANSAC = false;
         public Vector2 pos;
         public float distance;
     }
