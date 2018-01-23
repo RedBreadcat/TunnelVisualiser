@@ -51,13 +51,6 @@ public class PointCloudManager : MonoBehaviour {
         {
             pointCloud.SetActive(!pointCloud.activeInHierarchy);
         }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Vector3 pos = Camera.main.transform.position;
-            float d = lm.CalculateDistance(pos.x, pos.y, pos.z / 30.0f);
-            print(d);
-        }
     }
 
     void LoadPointCloud()
@@ -133,7 +126,7 @@ public class PointCloudManager : MonoBehaviour {
             threads[i].Join();
         }
 
-        float longestDistance = 200;
+        float longestDistance = 400;
         //Colour the points and fill the position array
         pointNum = 0;
         for (int i = 0; i < rings.Count; i++)
@@ -142,8 +135,17 @@ public class PointCloudManager : MonoBehaviour {
             {
                 if (rings[i].points[j].valid)
                 {
-                    float s = rings[i].points[j].distance / longestDistance;
-                    colours[pointNum] = Color.HSVToRGB(1, s, 1);
+                    float s = Mathf.Abs(rings[i].points[j].distance) / longestDistance;
+                    float h;
+                    if (rings[i].points[j].distance > 0)    //Positive distance indicates the point is bulging out
+                    {
+                        h = 0.65f; //blue
+                    }
+                    else
+                    {
+                        h = 1;  //red
+                    }
+                    colours[pointNum] = Color.HSVToRGB(h, s, 1);
 
                     Vector2 pt = rings[i].GetPointWithOffset(j);
                     points[pointNum] = new Vector3(pt.x, pt.y, i * 30);
@@ -177,7 +179,7 @@ public class PointCloudManager : MonoBehaviour {
                 if (rings[i].points[j].valid)
                 {
                     Vector2 pt = rings[i].GetPointWithOffset(j);
-                    rings[i].points[j].distance = lm.CalculateDistance(pt.x, pt.y, rings[i].id);    //Note: *1 here because the linefitting algorithm had a 1:1 tie between t and z.;
+                    rings[i].points[j].distance = lm.CalculateDistance(j, pt.x, pt.y, rings[i].id);    //Note: *1 here because the linefitting algorithm had a 1:1 tie between t and z.;
                 }
             }
         }
@@ -208,7 +210,6 @@ public class PointCloudManager : MonoBehaviour {
 			indices[i] = i;
 			myColors[i] = colours[id*limitPoints + i];
 		}
-
 
 		mesh.vertices = myPoints;
 		mesh.colors = myColors;

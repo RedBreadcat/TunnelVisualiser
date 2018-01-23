@@ -46,16 +46,39 @@ public class LineManager {
         }
     }
 
-    public float CalculateDistance(float ptX, float ptY, float ptZ)
+    public float CalculateDistance(int pointID, float ptX, float ptY, float ptZ)
     {
         float shortestDistance = float.MaxValue;
-        for (int i = 0; i < lines.Count; i++)
+        int lineStart = pointID - 20;
+        if (lineStart < 0)
         {
-            float distance = lines[i].CalculateDistanceFast(ptX, ptY, ptZ);
+            lineStart = 0;
+        }
+
+        int lineEnd = pointID + 20;
+        if (lineEnd > lines.Count)
+        {
+            lineEnd = lines.Count;
+        }
+        float qx, qy, shortestQx = 0, shortestQy = 0;
+
+        for (int i = lineStart; i < lineEnd; i++)
+        {
+            float distance = lines[i].CalculateDistanceFast(ptX, ptY, ptZ, out qx, out qy);
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;
+                shortestQx = qx;
+                shortestQy = qy;
             }
+        }
+
+        float distanceZeroToPointSquared = ptX * ptX + ptY * ptY;   //Distance^2 from 0,0 to point
+        float distanceZeroToLineSquared = shortestQx * shortestQx + shortestQy * shortestQy;    //Distance^2 from 0,0 to line
+
+        if (distanceZeroToLineSquared > distanceZeroToPointSquared) //If line is further away than the point, then the point is bulging inside of the tunnel
+        {
+            shortestDistance *= -1;
         }
 
         return shortestDistance;

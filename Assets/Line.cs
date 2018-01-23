@@ -61,12 +61,12 @@ public class Line {
     }
     
     //Based on assumption that Z is directly tied to t, therefore no solving is necessary
-    public float CalculateDistanceFast(float ptX, float ptY, float ptZ)
+    public float CalculateDistanceFast(float ptX, float ptY, float ptZ, out float qx, out float qy)
     {
         int t = (int) ptZ;
 
-        float qx = xLine + xLineT * t;
-        float qy = yLine + yLineT * t;
+        qx = xLine + xLineT * t;
+        qy = yLine + yLineT * t;
         float qz = zLine + zLineT * t;
 
         return Mathf.Sqrt(Mathf.Pow(ptX - qx, 2) + Mathf.Pow(ptY - qy, 2) + Mathf.Pow(ptZ - qz, 2));
