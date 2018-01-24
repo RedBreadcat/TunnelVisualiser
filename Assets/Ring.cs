@@ -6,6 +6,7 @@ public class Ring {
 
     public int id;  //Necessary
     public Vector2 offset;
+    public float angle; //Radians
     public List<Point> points;
 
     public class Point
@@ -31,8 +32,15 @@ public class Ring {
         points.Add(pt);
     }
 
-    public Vector2 GetPointWithOffset(int i)
+    public Vector2 GetPointCorrected(int i)
     {
-        return points[i].pos + offset;
+        Vector2 alignedPoint = points[i].pos + offset;
+
+        float s = Mathf.Sin(angle);
+        float c = Mathf.Cos(angle);
+
+        float xNew = alignedPoint.x * c - alignedPoint.y * s;
+        float yNew = alignedPoint.x * s + alignedPoint.y * c;
+        return new Vector2(xNew, yNew);
     }
 }

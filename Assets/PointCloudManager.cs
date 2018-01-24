@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 public class PointCloudManager : MonoBehaviour {
 
+    public static PointCloudManager pcm;
 	public string pathWithoutExtension;
 	public Material matVertex;
 
-	private GameObject pointCloud;
-    LineManager lm;
+	public GameObject pointCloud;
+    public LineManager lm;
 
 	public float scale = 1;
 	public bool invertYZ = false;
@@ -34,22 +35,28 @@ public class PointCloudManager : MonoBehaviour {
     [SerializeField]
     Material lineMat;
 
+    bool loaded = false;
+
     void Start()
     {
+        pcm = this;
         LoadLines();
         LoadPointCloud();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L))
+        if (loaded)
         {
-            lm.ToggleVisibility();
-        }
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                lm.ToggleVisibility();
+            }
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            pointCloud.SetActive(!pointCloud.activeInHierarchy);
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                pointCloud.SetActive(!pointCloud.activeInHierarchy);
+            }
         }
     }
 
@@ -147,7 +154,7 @@ public class PointCloudManager : MonoBehaviour {
                     }
                     colours[pointNum] = Color.HSVToRGB(h, s, 1);
 
-                    Vector2 pt = rings[i].GetPointWithOffset(j);
+                    Vector2 pt = rings[i].GetPointCorrected(j);
                     points[pointNum] = new Vector3(pt.x, pt.y, i * 30);
                     pointNum++;
                 }
@@ -167,7 +174,10 @@ public class PointCloudManager : MonoBehaviour {
 
         descriptionText.gameObject.SetActive(false);
         text.gameObject.SetActive(false);
+        MenuControl.mc.CloudReady();
         lm.PlotLines(lineMat, rings.Count);
+        lm.ToggleVisibility();
+        loaded = true;
     }
 
     void ThreadedDistanceCalculation(int startIndex, int endIndex)
@@ -178,7 +188,7 @@ public class PointCloudManager : MonoBehaviour {
             {
                 if (rings[i].points[j].valid)
                 {
-                    Vector2 pt = rings[i].GetPointWithOffset(j);
+                    Vector2 pt = rings[i].GetPointCorrected(j);
                     rings[i].points[j].distance = lm.CalculateDistance(j, pt.x, pt.y, rings[i].id);    //Note: *1 here because the linefitting algorithm had a 1:1 tie between t and z.;
                 }
             }
@@ -244,6 +254,7 @@ public class PointCloudManager : MonoBehaviour {
             float xAdjust = (float) Convert.ToDouble(sr.ReadLine());
             float yAdjust = (float) Convert.ToDouble(sr.ReadLine());
             rings[currentRing].offset = new Vector2(xAdjust, yAdjust);
+            rings[currentRing].angle = 0 * (float)Convert.ToDouble(sr.ReadLine());
 
             line = sr.ReadLine();
             while (line != "RANSAC")             //while (line != "RING" && line != null)
