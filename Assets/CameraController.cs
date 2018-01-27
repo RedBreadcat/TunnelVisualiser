@@ -166,4 +166,9 @@ public class CameraController : MonoBehaviour {
             text.text = "Press Tab to open and close the menu\nW: move forward\nS: move back\nA: move left\nD: move right\nSpace: move up\nCtrl: move down\nUse the mouse to look around. Hold shift to move faster.";
         }
     }
+
+    public void ToggleFreeMode()
+    {
+        SetFreeMode(!freeMode);
+    }
 }

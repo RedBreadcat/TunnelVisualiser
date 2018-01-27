@@ -57,6 +57,11 @@ public class PointCloudManager : MonoBehaviour {
             {
                 pointCloud.SetActive(!pointCloud.activeInHierarchy);
             }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                CameraController.cam.ToggleFreeMode();
+            }
         }
     }
 
@@ -154,7 +159,7 @@ public class PointCloudManager : MonoBehaviour {
                     }
                     colours[pointNum] = Color.HSVToRGB(h, s, 1);
 
-                    Vector2 pt = rings[i].GetPointCorrected(j);
+                    Vector2 pt = rings[i].GetPointAligned(j);
                     points[pointNum] = new Vector3(pt.x, pt.y, i * 30);
                     pointNum++;
                 }
@@ -188,7 +193,7 @@ public class PointCloudManager : MonoBehaviour {
             {
                 if (rings[i].points[j].valid)
                 {
-                    Vector2 pt = rings[i].GetPointCorrected(j);
+                    Vector2 pt = rings[i].GetPointAligned(j);
                     rings[i].points[j].distance = lm.CalculateDistance(j, pt.x, pt.y, rings[i].id);    //Note: *1 here because the linefitting algorithm had a 1:1 tie between t and z.;
                 }
             }
@@ -254,7 +259,7 @@ public class PointCloudManager : MonoBehaviour {
             float xAdjust = (float) Convert.ToDouble(sr.ReadLine());
             float yAdjust = (float) Convert.ToDouble(sr.ReadLine());
             rings[currentRing].offset = new Vector2(xAdjust, yAdjust);
-            rings[currentRing].angle = 0 * (float)Convert.ToDouble(sr.ReadLine());
+            rings[currentRing].angle = (float)Convert.ToDouble(sr.ReadLine());
 
             line = sr.ReadLine();
             while (line != "RANSAC")             //while (line != "RING" && line != null)

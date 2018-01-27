@@ -32,15 +32,15 @@ public class Ring {
         points.Add(pt);
     }
 
-    public Vector2 GetPointCorrected(int i)
+    public Vector2 GetPointAligned(int i)
     {
-        Vector2 alignedPoint = points[i].pos + offset;
+        Vector2 alignedPoint = points[i].pos;
 
         float s = Mathf.Sin(angle);
         float c = Mathf.Cos(angle);
 
         float xNew = alignedPoint.x * c - alignedPoint.y * s;
         float yNew = alignedPoint.x * s + alignedPoint.y * c;
-        return new Vector2(xNew, yNew);
+        return new Vector2(xNew, yNew) + offset;    //Apply translation, then rotation
     }
 }
