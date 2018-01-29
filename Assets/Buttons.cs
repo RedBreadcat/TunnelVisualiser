@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Buttons : MonoBehaviour {
 
+    public void StartButton()
+    {
+        Destroy(gameObject);
+        PointCloudManager.pcm.Construct();
+        CameraController.cam.enabled = true;
+    }
+
     public void FreeCam()
     {
         CameraController.cam.SetFreeMode(true);

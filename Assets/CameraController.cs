@@ -37,9 +37,8 @@ public class CameraController : MonoBehaviour {
     void Awake()
     {
         cam = this;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
         originalRotation = transform.localRotation;
+        enabled = false;
     }
 
     void Update()
@@ -159,16 +158,28 @@ public class CameraController : MonoBehaviour {
         {
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
-            text.text = "Press Tab to open and close the menu\nW: move forward\nS: move back\nUse the mouse to look around. Hold shift to move faster.";
+            text.text = "Press Tab to open and close the menu\nW: move forward\nS: move back\nUse the mouse to look around\nUse the scroll wheel to move the diameter\nHold shift to move faster";
         }
         else
         {
-            text.text = "Press Tab to open and close the menu\nW: move forward\nS: move back\nA: move left\nD: move right\nSpace: move up\nCtrl: move down\nUse the mouse to look around. Hold shift to move faster.";
+            text.text = "Press Tab to open and close the menu\nW: move forward\nS: move back\nA: move left\nD: move right\nSpace: move up\nCtrl: move down\nUse the scroll wheel to move the diameter\nUse the mouse to look aroun\nHold shift to move faster";
         }
     }
 
     public void ToggleFreeMode()
     {
         SetFreeMode(!freeMode);
+    }
+
+    public static void HideCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    public static void ShowCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }

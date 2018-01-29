@@ -43,4 +43,16 @@ public class Ring {
         float yNew = alignedPoint.x * s + alignedPoint.y * c;
         return new Vector2(xNew, yNew) + offset;    //Apply translation, then rotation
     }
+
+    public Vector3 GetPointAligned3D(int i)
+    {
+        Vector2 alignedPoint = points[i].pos;
+
+        float s = Mathf.Sin(angle);
+        float c = Mathf.Cos(angle);
+
+        float xNew = alignedPoint.x * c - alignedPoint.y * s;
+        float yNew = alignedPoint.x * s + alignedPoint.y * c;
+        return new Vector3(xNew + offset.x, yNew + offset.y, id * PointCloudManager.pcm.zSpacing);
+    }
 }

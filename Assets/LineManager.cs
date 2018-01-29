@@ -8,10 +8,10 @@ public class LineManager {
 
     List<Line> lines;
 
-	public void LoadLines(string pathWithoutExtension)
+	public void LoadLines(string path)
     {
         lines = new List<Line>();
-        StreamReader sr = new StreamReader(pathWithoutExtension + "_lines.txt");
+        StreamReader sr = new StreamReader(path);
         string line;
 
         while ((line = sr.ReadLine()) != null)
