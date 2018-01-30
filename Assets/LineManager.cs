@@ -49,13 +49,13 @@ public class LineManager {
     public float CalculateDistance(int pointID, float ptX, float ptY, float ptZ)
     {
         float shortestDistance = float.MaxValue;
-        int lineStart = pointID - 20;
+        int lineStart = pointID - 40;
         if (lineStart < 0)
         {
             lineStart = 0;
         }
 
-        int lineEnd = pointID + 20;
+        int lineEnd = pointID + 40;
         if (lineEnd > lines.Count)
         {
             lineEnd = lines.Count;
@@ -64,7 +64,7 @@ public class LineManager {
 
         for (int i = lineStart; i < lineEnd; i++)
         {
-            float distance = lines[i].CalculateDistanceFast(ptX, ptY, ptZ, out qx, out qy);
+            float distance = lines[i].CalculateDistanceSquaredFast(ptX, ptY, ptZ, out qx, out qy);
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;
@@ -72,6 +72,8 @@ public class LineManager {
                 shortestQy = qy;
             }
         }
+
+        shortestDistance = Mathf.Sqrt(shortestDistance);
 
         float distanceZeroToPointSquared = ptX * ptX + ptY * ptY;   //Distance^2 from 0,0 to point
         float distanceZeroToLineSquared = shortestQx * shortestQx + shortestQy * shortestQy;    //Distance^2 from 0,0 to line

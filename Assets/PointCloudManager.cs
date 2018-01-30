@@ -173,6 +173,7 @@ public class PointCloudManager : MonoBehaviour {
                         {
                             h = 1;  //red
                         }
+
                         colours[pointNum] = Color.HSVToRGB(h, s, 1);
 
                         Vector2 pt = rings[i].GetPointAligned(j);
@@ -213,7 +214,7 @@ public class PointCloudManager : MonoBehaviour {
                 if (rings[i].points[j].valid)
                 {
                     Vector2 pt = rings[i].GetPointAligned(j);
-                    rings[i].points[j].distance = lm.CalculateDistance(j, pt.x, pt.y, rings[i].id);    //Note: *1 here because the linefitting algorithm had a 1:1 tie between t and z.;
+                    rings[i].points[j].distance = lm.CalculateDistance(j, pt.x, pt.y, rings[i].id);    //No zSpacing here because the linefitting algorithm had a 1:1 tie between t and z.;
                 }
             }
         }
