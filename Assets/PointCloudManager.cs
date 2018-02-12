@@ -37,6 +37,9 @@ public class PointCloudManager : MonoBehaviour {
 
     string tunnelPath, linePath, adjustmentPath;
 
+    public float maxDistanceOuter = 400;
+    public float maxDistanceInner = 400;
+
     private void Awake()
     {
         pcm = this;    
@@ -113,6 +116,7 @@ public class PointCloudManager : MonoBehaviour {
 
                 ring.AddPoint(range, angle);
                 numPoints++;
+
                 if (id == 1080)
                 {
                     rings.Add(ring);
@@ -149,7 +153,6 @@ public class PointCloudManager : MonoBehaviour {
                 threads[i].Join();
             }
 
-            float longestDistance = 400;
             //Colour the points and fill the position array
             pointNum = 0;
             for (int i = 0; i < rings.Count; i++)
@@ -158,20 +161,22 @@ public class PointCloudManager : MonoBehaviour {
                 {
                     if (rings[i].points[j].valid)
                     {
-                        float distanceWithDeadZone = Mathf.Abs(rings[i].points[j].distance) - 80;
+                        float distanceWithDeadZone = Mathf.Abs(rings[i].points[j].distance) - 60;
                         if (distanceWithDeadZone < 0)
                         {
                             distanceWithDeadZone = 0;
                         }
-                        float s = distanceWithDeadZone / longestDistance;
+                        float s;
                         float h;
                         if (rings[i].points[j].distance > 0)    //Positive distance indicates the point is bulging out
                         {
                             h = 0.65f; //blue
+                            s = distanceWithDeadZone / maxDistanceOuter;
                         }
                         else
                         {
                             h = 1;  //red
+                            s = distanceWithDeadZone / maxDistanceInner;
                         }
 
                         colours[pointNum] = Color.HSVToRGB(h, s, 1);
